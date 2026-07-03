@@ -1,16 +1,17 @@
 "use client";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { getToken, removeToken } from "@/services/api";
 
 export default function Navbar() {
   const router = useRouter();
+  const pathname = usePathname();
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   useEffect(() => {
     setIsAuthenticated(!!getToken());
-  }, []);
+  }, [pathname]);
 
   const handleLogout = () => {
     removeToken();

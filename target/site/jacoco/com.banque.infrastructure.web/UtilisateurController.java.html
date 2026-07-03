@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="fr"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>UtilisateurController.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">java-banque-api</a> &gt; <a href="index.source.html" class="el_package">com.banque.infrastructure.web</a> &gt; <span class="el_source">UtilisateurController.java</span></div><h1>UtilisateurController.java</h1><pre class="source lang-java linenums">package com.banque.infrastructure.web;
+
+import com.banque.application.port.in.CompteUseCase;
+import com.banque.application.port.in.UtilisateurUseCase;
+import com.banque.domain.exception.MetierException;
+import com.banque.domain.model.Compte;
+import com.banque.domain.model.Utilisateur;
+import com.banque.infrastructure.security.CustomUserDetailsService;
+import com.banque.infrastructure.security.JwtService;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.HashMap;
+import java.util.Map;
+
+@RestController
+@RequestMapping
+public class UtilisateurController {
+
+    private final UtilisateurUseCase utilisateurUseCase;
+    private final CompteUseCase compteUseCase;
+    private final JwtService jwtService;
+    private final CustomUserDetailsService userDetailsService;
+
+<span class="fc" id="L27">    public UtilisateurController(UtilisateurUseCase utilisateurUseCase, CompteUseCase compteUseCase, JwtService jwtService, CustomUserDetailsService userDetailsService) {</span>
+<span class="fc" id="L28">        this.utilisateurUseCase = utilisateurUseCase;</span>
+<span class="fc" id="L29">        this.compteUseCase = compteUseCase;</span>
+<span class="fc" id="L30">        this.jwtService = jwtService;</span>
+<span class="fc" id="L31">        this.userDetailsService = userDetailsService;</span>
+<span class="fc" id="L32">    }</span>
+
+    @PostMapping(&quot;/utilisateurs/register&quot;)
+    public ResponseEntity&lt;?&gt; register(@RequestBody RegisterRequest request) {
+        try {
+<span class="fc" id="L37">            Utilisateur user = utilisateurUseCase.inscrireUtilisateur(</span>
+<span class="fc" id="L38">                    request.getNom(), request.getPrenom(), request.getEmail(), request.getMotDePasse(), request.getAge());</span>
+            
+<span class="fc" id="L40">            Compte compte = compteUseCase.creerCompte(user.getId(), &quot;courant&quot;);</span>
+
+<span class="pc bpc" id="L42" title="3 of 4 branches missed.">            if (request.getSoldeInitial() != null &amp;&amp; request.getSoldeInitial() &gt; 0) {</span>
+<span class="nc" id="L43">               compteUseCase.crediterCompte(compte.getId(), request.getSoldeInitial());</span>
+            }
+
+<span class="fc" id="L46">            return ResponseEntity.status(HttpStatus.CREATED).body(Map.of(&quot;message&quot;, &quot;Utilisateur créé avec succès&quot;, &quot;utilisateurId&quot;, user.getId()));</span>
+<span class="fc" id="L47">        } catch (MetierException e) {</span>
+<span class="fc" id="L48">            return ResponseEntity.badRequest().body(Map.of(&quot;message&quot;, e.getMessage()));</span>
+        }
+    }
+
+    @PostMapping(&quot;/login&quot;)
+    public ResponseEntity&lt;?&gt; login(@RequestBody LoginRequest request) {
+        try {
+<span class="fc" id="L55">            utilisateurUseCase.authentifierUtilisateur(request.getEmail(), request.getMotDePasse());</span>
+<span class="fc" id="L56">            UserDetails userDetails = userDetailsService.loadUserByUsername(request.getEmail());</span>
+<span class="fc" id="L57">            String token = jwtService.generateToken(userDetails);</span>
+            
+<span class="fc" id="L59">            Map&lt;String, String&gt; response = new HashMap&lt;&gt;();</span>
+<span class="fc" id="L60">            response.put(&quot;token&quot;, token);</span>
+<span class="fc" id="L61">            return ResponseEntity.ok(response);</span>
+<span class="fc" id="L62">        } catch (MetierException e) {</span>
+<span class="fc" id="L63">            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of(&quot;message&quot;, e.getMessage()));</span>
+        }
+    }
+}
+
+<span class="fc" id="L68">class RegisterRequest {</span>
+    private String nom;
+    private String prenom;
+    private String email;
+    private String motDePasse;
+    private int age;
+    private Double soldeInitial;
+    
+<span class="fc" id="L76">    public String getNom() { return nom; }</span>
+<span class="fc" id="L77">    public void setNom(String nom) { this.nom = nom; }</span>
+<span class="fc" id="L78">    public String getPrenom() { return prenom; }</span>
+<span class="fc" id="L79">    public void setPrenom(String prenom) { this.prenom = prenom; }</span>
+<span class="fc" id="L80">    public String getEmail() { return email; }</span>
+<span class="fc" id="L81">    public void setEmail(String email) { this.email = email; }</span>
+<span class="fc" id="L82">    public String getMotDePasse() { return motDePasse; }</span>
+<span class="fc" id="L83">    public void setMotDePasse(String motDePasse) { this.motDePasse = motDePasse; }</span>
+<span class="fc" id="L84">    public int getAge() { return age; }</span>
+<span class="fc" id="L85">    public void setAge(int age) { this.age = age; }</span>
+<span class="fc" id="L86">    public Double getSoldeInitial() { return soldeInitial; }</span>
+<span class="fc" id="L87">    public void setSoldeInitial(Double soldeInitial) { this.soldeInitial = soldeInitial; }</span>
+}
+
+<span class="fc" id="L90">class LoginRequest {</span>
+    private String email;
+    private String motDePasse;
+    
+<span class="fc" id="L94">    public String getEmail() { return email; }</span>
+<span class="fc" id="L95">    public void setEmail(String email) { this.email = email; }</span>
+<span class="fc" id="L96">    public String getMotDePasse() { return motDePasse; }</span>
+<span class="fc" id="L97">    public void setMotDePasse(String motDePasse) { this.motDePasse = motDePasse; }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

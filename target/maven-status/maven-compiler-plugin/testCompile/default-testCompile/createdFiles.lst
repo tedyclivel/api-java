@@ -1,0 +1,10 @@
+com\banque\infrastructure\web\CompteControllerTest.class
+com\banque\BanqueApplicationTest.class
+com\banque\domain\model\HistoriqueTest.class
+com\banque\infrastructure\web\UtilisateurControllerTest.class
+com\banque\application\service\CompteServiceTest.class
+com\banque\application\service\UtilisateurServiceTest.class
+com\banque\infrastructure\security\SecurityTests.class
+com\banque\domain\model\CompteTest.class
+com\banque\infrastructure\persistence\PersistenceTests.class
+com\banque\domain\model\UtilisateurTest.class

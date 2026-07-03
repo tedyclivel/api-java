@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="fr"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Compte.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">java-banque-api</a> &gt; <a href="index.source.html" class="el_package">com.banque.domain.model</a> &gt; <span class="el_source">Compte.java</span></div><h1>Compte.java</h1><pre class="source lang-java linenums">package com.banque.domain.model;
+
+import jakarta.persistence.*;
+import java.util.Date;
+import com.banque.domain.exception.SoldeInsuffisantException;
+
+@Entity
+@Table(name = &quot;compte&quot;)
+public class Compte {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer id;
+
+    @Column(name = &quot;utilisateur_id&quot;, nullable = false)
+    private Integer utilisateurId;
+
+    @Column(name = &quot;type_compte&quot;)
+    private String typeCompte;
+
+    private double solde;
+
+    @Column(name = &quot;date_creation&quot;)
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date dateCreation;
+
+<span class="fc" id="L26">    public Compte() {}</span>
+
+<span class="fc" id="L28">    public Compte(Integer id, Integer utilisateurId, String typeCompte, double solde, Date dateCreation) {</span>
+<span class="fc" id="L29">        this.id = id;</span>
+<span class="fc" id="L30">        this.utilisateurId = utilisateurId;</span>
+<span class="fc" id="L31">        this.typeCompte = typeCompte;</span>
+<span class="fc" id="L32">        this.solde = solde;</span>
+<span class="fc" id="L33">        this.dateCreation = dateCreation;</span>
+<span class="fc" id="L34">    }</span>
+
+    public void crediter(double montant) {
+<span class="pc bpc" id="L37" title="1 of 2 branches missed.">        if (montant &gt; 0) {</span>
+<span class="fc" id="L38">            this.solde += montant;</span>
+        }
+<span class="fc" id="L40">    }</span>
+
+    public void debiter(double montant) throws SoldeInsuffisantException {
+<span class="pc bpc" id="L43" title="1 of 2 branches missed.">        if (montant &gt; 0) {</span>
+<span class="fc bfc" id="L44" title="All 2 branches covered.">            if (this.solde &gt;= montant) {</span>
+<span class="fc" id="L45">                this.solde -= montant;</span>
+            } else {
+<span class="fc" id="L47">                throw new SoldeInsuffisantException(&quot;Solde insuffisant pour ce retrait.&quot;);</span>
+            }
+        }
+<span class="fc" id="L50">    }</span>
+
+<span class="fc" id="L52">    public Integer getId() { return id; }</span>
+<span class="fc" id="L53">    public void setId(Integer id) { this.id = id; }</span>
+<span class="fc" id="L54">    public Integer getUtilisateurId() { return utilisateurId; }</span>
+<span class="fc" id="L55">    public void setUtilisateurId(Integer utilisateurId) { this.utilisateurId = utilisateurId; }</span>
+<span class="fc" id="L56">    public String getTypeCompte() { return typeCompte; }</span>
+<span class="fc" id="L57">    public void setTypeCompte(String typeCompte) { this.typeCompte = typeCompte; }</span>
+<span class="fc" id="L58">    public double getSolde() { return solde; }</span>
+<span class="fc" id="L59">    public void setSolde(double solde) { this.solde = solde; }</span>
+<span class="fc" id="L60">    public Date getDateCreation() { return dateCreation; }</span>
+<span class="fc" id="L61">    public void setDateCreation(Date dateCreation) { this.dateCreation = dateCreation; }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

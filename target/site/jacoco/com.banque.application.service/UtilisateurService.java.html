@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="fr"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>UtilisateurService.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">java-banque-api</a> &gt; <a href="index.source.html" class="el_package">com.banque.application.service</a> &gt; <span class="el_source">UtilisateurService.java</span></div><h1>UtilisateurService.java</h1><pre class="source lang-java linenums">package com.banque.application.service;
+
+import com.banque.application.port.in.UtilisateurUseCase;
+import com.banque.application.port.out.UtilisateurRepository;
+import com.banque.domain.exception.MetierException;
+import com.banque.domain.exception.NonTrouveException;
+import com.banque.domain.model.Utilisateur;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+
+import java.util.Date;
+import java.util.List;
+
+@Service
+public class UtilisateurService implements UtilisateurUseCase {
+    
+    private final UtilisateurRepository utilisateurRepository;
+    private final PasswordEncoder passwordEncoder;
+
+<span class="fc" id="L20">    public UtilisateurService(UtilisateurRepository utilisateurRepository, PasswordEncoder passwordEncoder) {</span>
+<span class="fc" id="L21">        this.utilisateurRepository = utilisateurRepository;</span>
+<span class="fc" id="L22">        this.passwordEncoder = passwordEncoder;</span>
+<span class="fc" id="L23">    }</span>
+
+    @Override
+    public Utilisateur inscrireUtilisateur(String nom, String prenom, String email, String motDePasse, int age) throws MetierException {
+<span class="fc bfc" id="L27" title="All 2 branches covered.">        if (utilisateurRepository.trouverParEmail(email).isPresent()) {</span>
+<span class="fc" id="L28">            throw new MetierException(&quot;Un utilisateur avec cet email existe déjà.&quot;);</span>
+        }
+        
+<span class="fc" id="L31">        String hashMdp = passwordEncoder.encode(motDePasse);</span>
+<span class="fc" id="L32">        Utilisateur nouvelUtilisateur = new Utilisateur(null, nom, prenom, email, hashMdp, age, new Date());</span>
+        
+<span class="fc" id="L34">        return utilisateurRepository.sauvegarder(nouvelUtilisateur);</span>
+    }
+
+    @Override
+    public Utilisateur authentifierUtilisateur(String email, String motDePasse) throws MetierException {
+<span class="fc" id="L39">        Utilisateur user = utilisateurRepository.trouverParEmail(email)</span>
+<span class="fc" id="L40">                .orElseThrow(() -&gt; new MetierException(&quot;Email ou mot de passe incorrect.&quot;));</span>
+                
+<span class="fc bfc" id="L42" title="All 2 branches covered.">        if (!passwordEncoder.matches(motDePasse, user.getMotDePasse())) {</span>
+<span class="fc" id="L43">            throw new MetierException(&quot;Email ou mot de passe incorrect.&quot;);</span>
+        }
+        
+<span class="fc" id="L46">        return user;</span>
+    }
+
+    @Override
+    public Utilisateur obtenirUtilisateur(Integer id) throws MetierException {
+<span class="fc" id="L51">        return utilisateurRepository.trouverParId(id)</span>
+<span class="fc" id="L52">                .orElseThrow(() -&gt; new NonTrouveException(&quot;Utilisateur non trouvé avec l'id : &quot; + id));</span>
+    }
+
+    @Override
+    public List&lt;Utilisateur&gt; listerUtilisateurs() {
+<span class="fc" id="L57">        return utilisateurRepository.trouverTous();</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

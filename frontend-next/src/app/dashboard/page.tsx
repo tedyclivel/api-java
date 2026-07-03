@@ -106,13 +106,37 @@ export default function Dashboard() {
   };
 
   if (loading) {
-    return <main className="container flex-center" style={{ minHeight: "80vh" }}>Chargement...</main>;
+    return (
+      <main className="container page-transition" style={{ paddingBottom: "4rem" }}>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "2rem" }}>
+          <div>
+            <div className="skeleton skeleton-text" style={{ width: "200px", height: "2.5rem" }}></div>
+            <div className="skeleton skeleton-text" style={{ width: "300px" }}></div>
+          </div>
+        </div>
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 2fr", gap: "2rem" }}>
+          <div>
+            <div className="glass-panel" style={{ height: "400px" }}>
+              <div className="skeleton skeleton-row"></div>
+              <div className="skeleton skeleton-row"></div>
+              <div className="skeleton skeleton-row"></div>
+            </div>
+          </div>
+          <div>
+            <div className="glass-panel" style={{ height: "400px" }}>
+              <div className="skeleton skeleton-row"></div>
+              <div className="skeleton skeleton-row" style={{ height: "200px" }}></div>
+            </div>
+          </div>
+        </div>
+      </main>
+    );
   }
 
   const selectedCompte = comptes.find(c => c.id === selectedCompteId);
 
   return (
-    <main className="container" style={{ paddingBottom: "4rem" }}>
+    <main className="container page-transition" style={{ paddingBottom: "4rem" }}>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "2rem" }}>
         <div>
           <h1 className="text-gradient" style={{ marginBottom: "0.5rem" }}>Tableau de bord</h1>

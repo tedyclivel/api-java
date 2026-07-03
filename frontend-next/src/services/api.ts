@@ -37,7 +37,7 @@ export async function fetchApi(endpoint: string, options: RequestInit = {}) {
   });
 
   if (!response.ok) {
-    if (response.status === 401 || response.status === 403) {
+    if (response.status === 401) {
       removeToken();
       if (typeof window !== "undefined" && window.location.pathname !== "/login") {
         window.location.href = "/login";

@@ -17,6 +17,14 @@ export default function Register() {
   const [success, setSuccess] = useState(false);
   const [loading, setLoading] = useState(false);
 
+  useEffect(() => {
+    import("@/services/api").then(({ getToken }) => {
+      if (getToken()) {
+        router.push("/dashboard");
+      }
+    });
+  }, [router]);
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({ ...formData, [e.target.id]: e.target.value });
   };

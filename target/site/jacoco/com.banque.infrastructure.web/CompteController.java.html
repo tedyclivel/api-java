@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="fr"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>CompteController.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">java-banque-api</a> &gt; <a href="index.source.html" class="el_package">com.banque.infrastructure.web</a> &gt; <span class="el_source">CompteController.java</span></div><h1>CompteController.java</h1><pre class="source lang-java linenums">package com.banque.infrastructure.web;
+
+import com.banque.application.port.in.CompteUseCase;
+import com.banque.domain.exception.MetierException;
+import com.banque.domain.model.Compte;
+import com.banque.domain.model.Historique;
+import com.banque.infrastructure.persistence.JpaUtilisateurRepository;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+import java.util.Map;
+
+@RestController
+@RequestMapping
+public class CompteController {
+
+    private final CompteUseCase compteUseCase;
+    private final JpaUtilisateurRepository utilisateurRepository;
+
+<span class="fc" id="L23">    public CompteController(CompteUseCase compteUseCase, JpaUtilisateurRepository utilisateurRepository) {</span>
+<span class="fc" id="L24">        this.compteUseCase = compteUseCase;</span>
+<span class="fc" id="L25">        this.utilisateurRepository = utilisateurRepository;</span>
+<span class="fc" id="L26">    }</span>
+
+    private Integer getUtilisateurConnecteId() {
+<span class="fc" id="L29">        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();</span>
+<span class="pc bpc" id="L30" title="1 of 2 branches missed.">        if (principal instanceof UserDetails) {</span>
+<span class="fc" id="L31">            String email = ((UserDetails) principal).getUsername();</span>
+<span class="fc" id="L32">            return utilisateurRepository.findByEmail(email).orElseThrow().getId();</span>
+        }
+<span class="nc" id="L34">        return null;</span>
+    }
+
+    @GetMapping(&quot;/mes-comptes&quot;)
+    public ResponseEntity&lt;?&gt; getMesComptes() {
+<span class="fc" id="L39">        Integer uId = getUtilisateurConnecteId();</span>
+<span class="fc" id="L40">        List&lt;Compte&gt; comptes = compteUseCase.listerComptesUtilisateur(uId);</span>
+<span class="fc" id="L41">        return ResponseEntity.ok(comptes);</span>
+    }
+
+    @PostMapping(&quot;/comptes&quot;)
+    public ResponseEntity&lt;?&gt; creerCompte(@RequestBody Map&lt;String, Object&gt; body) {
+        try {
+<span class="fc" id="L47">            Integer uId = getUtilisateurConnecteId();</span>
+<span class="fc" id="L48">            String typeCompte = (String) body.getOrDefault(&quot;typeCompte&quot;, &quot;epargne&quot;);</span>
+<span class="fc" id="L49">            Compte c = compteUseCase.creerCompte(uId, typeCompte);</span>
+<span class="fc" id="L50">            return ResponseEntity.status(201).body(c);</span>
+<span class="nc" id="L51">        } catch (MetierException e) {</span>
+<span class="nc" id="L52">            return ResponseEntity.badRequest().body(Map.of(&quot;message&quot;, e.getMessage()));</span>
+        }
+    }
+
+    @GetMapping(&quot;/comptes/{id}&quot;)
+    public ResponseEntity&lt;?&gt; getDetailsCompte(@PathVariable Integer id) {
+        try {
+<span class="fc" id="L59">            Compte c = compteUseCase.obtenirCompte(id);</span>
+<span class="fc bfc" id="L60" title="All 2 branches covered.">            if (!c.getUtilisateurId().equals(getUtilisateurConnecteId())) {</span>
+<span class="fc" id="L61">                return ResponseEntity.status(403).body(Map.of(&quot;message&quot;, &quot;Accès refusé.&quot;));</span>
+            }
+<span class="fc" id="L63">            return ResponseEntity.ok(c);</span>
+<span class="fc" id="L64">        } catch (MetierException e) {</span>
+<span class="fc" id="L65">            return ResponseEntity.badRequest().body(Map.of(&quot;message&quot;, e.getMessage()));</span>
+        }
+    }
+
+    @GetMapping(&quot;/comptes/{id}/historique&quot;)
+    public ResponseEntity&lt;?&gt; getHistorique(@PathVariable Integer id) {
+        try {
+<span class="fc" id="L72">            Compte c = compteUseCase.obtenirCompte(id);</span>
+<span class="fc bfc" id="L73" title="All 2 branches covered.">            if (!c.getUtilisateurId().equals(getUtilisateurConnecteId())) {</span>
+<span class="fc" id="L74">                return ResponseEntity.status(403).body(Map.of(&quot;message&quot;, &quot;Accès refusé.&quot;));</span>
+            }
+<span class="fc" id="L76">            List&lt;Historique&gt; hist = compteUseCase.obtenirHistorique(id);</span>
+<span class="fc" id="L77">            return ResponseEntity.ok(hist);</span>
+<span class="fc" id="L78">        } catch (MetierException e) {</span>
+<span class="fc" id="L79">            return ResponseEntity.badRequest().body(Map.of(&quot;message&quot;, e.getMessage()));</span>
+        }
+    }
+
+    @PostMapping(&quot;/comptes/{id}/depot&quot;)
+    public ResponseEntity&lt;?&gt; depot(@PathVariable Integer id, @RequestBody Map&lt;String, Double&gt; body) {
+        try {
+<span class="fc" id="L86">            Compte c = compteUseCase.obtenirCompte(id);</span>
+<span class="fc bfc" id="L87" title="All 2 branches covered.">            if (!c.getUtilisateurId().equals(getUtilisateurConnecteId())) {</span>
+<span class="fc" id="L88">                return ResponseEntity.status(403).body(Map.of(&quot;message&quot;, &quot;Accès refusé.&quot;));</span>
+            }
+<span class="fc" id="L90">            compteUseCase.crediterCompte(id, body.get(&quot;montant&quot;));</span>
+<span class="fc" id="L91">            return ResponseEntity.ok(Map.of(&quot;message&quot;, &quot;Dépôt réussi.&quot;));</span>
+<span class="fc" id="L92">        } catch (MetierException e) {</span>
+<span class="fc" id="L93">            return ResponseEntity.badRequest().body(Map.of(&quot;message&quot;, e.getMessage()));</span>
+        }
+    }
+
+    @PostMapping(&quot;/comptes/{id}/retrait&quot;)
+    public ResponseEntity&lt;?&gt; retrait(@PathVariable Integer id, @RequestBody Map&lt;String, Double&gt; body) {
+        try {
+<span class="fc" id="L100">            Compte c = compteUseCase.obtenirCompte(id);</span>
+<span class="fc bfc" id="L101" title="All 2 branches covered.">            if (!c.getUtilisateurId().equals(getUtilisateurConnecteId())) {</span>
+<span class="fc" id="L102">                return ResponseEntity.status(403).body(Map.of(&quot;message&quot;, &quot;Accès refusé.&quot;));</span>
+            }
+<span class="fc" id="L104">            compteUseCase.debiterCompte(id, body.get(&quot;montant&quot;));</span>
+<span class="fc" id="L105">            return ResponseEntity.ok(Map.of(&quot;message&quot;, &quot;Retrait réussi.&quot;));</span>
+<span class="fc" id="L106">        } catch (MetierException e) {</span>
+<span class="fc" id="L107">            return ResponseEntity.badRequest().body(Map.of(&quot;message&quot;, e.getMessage()));</span>
+        }
+    }
+
+    @PostMapping(&quot;/comptes/{id}/virement&quot;)
+    public ResponseEntity&lt;?&gt; virement(@PathVariable Integer id, @RequestBody Map&lt;String, Object&gt; body) {
+        try {
+<span class="fc" id="L114">            Compte c = compteUseCase.obtenirCompte(id);</span>
+<span class="fc bfc" id="L115" title="All 2 branches covered.">            if (!c.getUtilisateurId().equals(getUtilisateurConnecteId())) {</span>
+<span class="fc" id="L116">                return ResponseEntity.status(403).body(Map.of(&quot;message&quot;, &quot;Accès refusé.&quot;));</span>
+            }
+<span class="fc" id="L118">            Double montant = Double.parseDouble(body.get(&quot;montant&quot;).toString());</span>
+<span class="fc" id="L119">            Integer destinataireId = Integer.parseInt(body.get(&quot;destinataireId&quot;).toString());</span>
+<span class="fc" id="L120">            compteUseCase.effectuerVirement(id, destinataireId, montant);</span>
+<span class="fc" id="L121">            return ResponseEntity.ok(Map.of(&quot;message&quot;, &quot;Virement réussi.&quot;));</span>
+<span class="fc" id="L122">        } catch (MetierException e) {</span>
+<span class="fc" id="L123">            return ResponseEntity.badRequest().body(Map.of(&quot;message&quot;, e.getMessage()));</span>
+        }
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>
