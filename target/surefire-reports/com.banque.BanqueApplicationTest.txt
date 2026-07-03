@@ -1,4 +1,4 @@
 -------------------------------------------------------------------------------
 Test set: com.banque.BanqueApplicationTest
 -------------------------------------------------------------------------------
-Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 7.581 s -- in com.banque.BanqueApplicationTest
+Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 7.247 s -- in com.banque.BanqueApplicationTest

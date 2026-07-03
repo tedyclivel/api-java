@@ -43,8 +43,17 @@ export async function fetchApi(endpoint: string, options: RequestInit = {}) {
         window.location.href = "/login";
       }
     }
-    const errorData = await response.text();
-    throw new Error(errorData || "Une erreur est survenue");
+    const errorText = await response.text();
+    let errorMessage = `Erreur HTTP ${response.status}`;
+    if (errorText) {
+      try {
+        const errorJson = JSON.parse(errorText);
+        errorMessage = errorJson.message || errorJson.error || errorText;
+      } catch (e) {
+        errorMessage = errorText;
+      }
+    }
+    throw new Error(errorMessage);
   }
 
   const contentType = response.headers.get("content-type");

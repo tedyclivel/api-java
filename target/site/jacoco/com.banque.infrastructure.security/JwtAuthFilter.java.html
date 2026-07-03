@@ -48,8 +48,8 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 <span class="fc" id="L48">            UserDetails userDetails = this.userDetailsService.loadUserByUsername(userEmail);</span>
 <span class="pc bpc" id="L49" title="1 of 2 branches missed.">            if (jwtService.isTokenValid(jwt, userDetails)) {</span>
 <span class="fc" id="L50">                UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(</span>
-                        userDetails,
-                        null,
+<span class="fc" id="L51">                        userDetails,</span>
+<span class="fc" id="L52">                        null,</span>
 <span class="fc" id="L53">                        userDetails.getAuthorities()</span>
                 );
 <span class="fc" id="L55">                authToken.setDetails(</span>

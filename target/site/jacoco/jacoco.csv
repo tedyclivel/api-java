@@ -1,9 +1,9 @@
 GROUP,PACKAGE,CLASS,INSTRUCTION_MISSED,INSTRUCTION_COVERED,BRANCH_MISSED,BRANCH_COVERED,LINE_MISSED,LINE_COVERED,COMPLEXITY_MISSED,COMPLEXITY_COVERED,METHOD_MISSED,METHOD_COVERED
-java-banque-api,com.banque.application.service,UtilisateurService,0,89,0,4,0,17,0,9,0,7
-java-banque-api,com.banque.application.service,CompteService,0,192,0,4,0,39,0,11,0,9
+java-banque-api,com.banque.application.service,UtilisateurService,0,90,0,4,0,17,0,9,0,7
+java-banque-api,com.banque.application.service,CompteService,0,193,0,4,0,39,0,11,0,9
 java-banque-api,com.banque.domain.model,Historique,0,66,0,0,0,21,0,14,0,14
 java-banque-api,com.banque.domain.model,Utilisateur,0,76,0,0,0,24,0,16,0,16
-java-banque-api,com.banque.domain.model,Compte,0,89,2,4,0,26,2,15,0,14
+java-banque-api,com.banque.domain.model,Compte,0,89,2,4,0,27,2,15,0,14
 java-banque-api,com.banque.infrastructure.web,UtilisateurController,14,97,3,1,1,21,2,3,0,3
 java-banque-api,com.banque.infrastructure.web,CompteController,10,254,1,11,3,51,1,14,0,9
 java-banque-api,com.banque.infrastructure.web,RegisterRequest,0,45,0,0,0,13,0,13,0,13
@@ -11,10 +11,10 @@ java-banque-api,com.banque.infrastructure.web,LoginRequest,0,17,0,0,0,5,0,5,0,5
 java-banque-api,com.banque.domain.exception,MetierException,0,4,0,0,0,2,0,1,0,1
 java-banque-api,com.banque.domain.exception,NonTrouveException,0,4,0,0,0,2,0,1,0,1
 java-banque-api,com.banque.domain.exception,SoldeInsuffisantException,0,4,0,0,0,2,0,1,0,1
-java-banque-api,com.banque.infrastructure.security,JwtAuthFilter,0,72,3,7,0,20,3,4,0,2
-java-banque-api,com.banque.infrastructure.security,CustomUserDetailsService,0,30,0,0,0,8,0,3,0,3
+java-banque-api,com.banque.infrastructure.security,JwtAuthFilter,0,72,3,7,0,22,3,4,0,2
+java-banque-api,com.banque.infrastructure.security,CustomUserDetailsService,0,30,0,0,0,9,0,3,0,3
 java-banque-api,com.banque.infrastructure.security,JwtService,0,99,1,3,0,25,1,11,0,10
-java-banque-api,com.banque.infrastructure.security,SecurityConfig,0,97,0,0,0,19,0,8,0,8
+java-banque-api,com.banque.infrastructure.security,SecurityConfig,0,94,0,0,0,19,0,8,0,8
 java-banque-api,com.banque.infrastructure.persistence,UtilisateurRepositoryAdapter,5,26,0,0,2,7,1,5,1,5
 java-banque-api,com.banque.infrastructure.persistence,CompteRepositoryAdapter,0,28,0,0,0,8,0,5,0,5
 java-banque-api,com.banque.infrastructure.persistence,HistoriqueRepositoryAdapter,0,17,0,0,0,5,0,3,0,3
